@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link rel="stylesheet" href="{{asset('frontend/css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{asset('frontend/css/all.min.css')}}">
+    <link rel="stylesheet" href="{{asset('frontend/css/animate.css')}}">
+    <link rel="stylesheet" href="{{asset('frontend/css/flaticon.css')}}">
+    <link rel="stylesheet" href="{{asset('frontend/css/magnific-popup.css')}}">
+    <link rel="stylesheet" href="{{asset('frontend/css/odometer.css')}}">
+    <link rel="stylesheet" href="{{asset('frontend/css/owl.carousel.min.css')}}">
+    <link rel="stylesheet" href="{{asset('frontend/css/owl.theme.default.min.css')}}">
+    <link rel="stylesheet" href="{{asset('frontend/css/nice-select.css')}}">
+    <link rel="stylesheet" href="{{asset('frontend/css/jquery.animatedheadline.css')}}">
+    <link rel="stylesheet" href="{{asset('frontend/css/main.css')}}">
+
+    <link rel="shortcut icon" href="{{asset('frontend/images/favicon.png')}}" type="image/x-icon">
+
+    <title>Booking  - Online Ticket Booking Website</title>
+
+
+</head>
+
+<body>
+    <!-- ==========Preloader========== -->
+    <div class="preloader">
+        <div class="preloader-inner">
+            <div class="preloader-icon">
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
+    <!-- ==========Preloader========== -->
+    <!-- ==========Overlay========== -->
+    <div class="overlay"></div>
+    <a href="#0" class="scrollToTop">
+        <i class="fas fa-angle-up"></i>
+    </a>
+    <!-- ==========Overlay========== -->
+
+    <!-- ==========Header-Section========== -->
+    <header class="header-section">
+        <div class="container">
+            <div class="header-wrapper">
+                <div class="logo">
+                    <a href="/">
+                       Booking
+                    </a>
+                </div>
+                <ul class="menu">
+                    <li>
+                        <a href="/" class="active">Home</a>
+                        
+                    </li>
+                    <li>
+                        <a href="/">movies</a>
+                      
+                    </li>
+                  
+                    
+                    <li class="header-button pr-0">
+                        @if (Route::has('login'))
+                <div class="sm:fixed sm:top-0 sm:right-0 p-6 text-right z-10">
+                    @auth
+                        <a href="{{ url('/dashboard') }}" class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Dashboard</a>
+                    @else
+                        <a href="{{ route('login') }}" class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Log in</a>
+
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}" class="ml-4 font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Register</a>
+                        @endif
+                    @endauth
+                </div>
+            @endif
+                    </li>
+                    
+                </ul>
+                <div class="header-bar d-lg-none">
+					<span></span>
+					<span></span>
+					<span></span>
+				</div>
+            </div>
+        </div>
+    </header>
+    <div class="ticket-plan-section padding-top padding-bottom">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <!-- Booking Card -->
+                <div class="card bg-none shadow-lg p-4 rounded-3" style="background: #001232;border: 1px solid #fff;">
+                    <h4 class="mb-3">Book Your {{$movies->title}} Movie</h4>
+
+                    <form action="{{route('bookConfirm')}}" method="POST">
+                        @csrf
+                        <!-- Movie Name -->
+                        <div class="mb-3">
+                          @php  
+                            $user=Auth::user()->id;
+                            $user_type=Auth::user()->role 
+                          @endphp
+                            <label class="form-label fw-bold">Movie</label>
+                            <input type="text" class="form-control" disabled value=" {{$movies->title}}">
+                            <input type="hidden" name="movie_id" class="form-control"  value=" {{$movies->id}}">
+                            <input type="hidden" name="user_id" class="form-control"  value=" {{ $user}}">
+                            <input type="hidden" name="userRole" value="{{$user_type}}"> 
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Choose Date</label>
+                            <input type="date" class="form-control" name="show_date" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Choose Timing</label>
+                            <div class="d-flex flex-wrap gap-2">
+                              @php
+                                $timings = json_decode($movies->show_timings, true);
+                              @endphp
+
+                              @if(!empty($timings))
+                                  @foreach($timings as $time)
+                                      <label class="">
+                                          <input type="radio" name="show_time" value="{{ $time }}"style="height: 18px;"/> {{ $time }}
+                                      </label>
+                                  @endforeach
+                              @endif
+                            </div>
+                        </div>
+
+                        <!-- Ticket Count -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Number of Tickets</label>
+                            <select name="tickets" class="form-select text-dark" required>
+                                <option value="">Select</option>
+                                <option value="1">1 Ticket</option>
+                                <option value="2">2 Tickets</option>
+                                <option value="3">3 Tickets</option>
+                                <option value="4">4 Tickets</option>
+                                <option value="5">5 Tickets</option>
+                            </select>
+                        </div>
+
+                        <!-- Proceed Button -->
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary px-5 py-2">
+                                Pay & Confirm
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <!-- End Booking Card -->
+
+            </div>
+        </div>
+    </div>
+</div>
+
+    <footer class="footer-section" style="
+    margin-top: 207px;
+">
+        
+        <div class="container">
+            <div class="footer-top">
+                <div class="logo">
+                    <a href="index-1.html">
+                        
+                    </a>
+                </div>
+                <ul class="social-icons">
+                    <li>
+                        <a href="#0">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#0" class="active">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#0">
+                            <i class="fab fa-pinterest-p"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#0">
+                            <i class="fab fa-google"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#0">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="footer-bottom">
+                <div class="footer-bottom-area">
+                    <div class="left">
+                        <p>Copyright © 2020.All Rights Reserved By <a href="#0">Booking </a></p>
+                    </div>
+                    <ul class="links">
+                        <li>
+                            <a href="#0">About</a>
+                        </li>
+                        <li>
+                            <a href="#0">Terms Of Use</a>
+                        </li>
+                        <li>
+                            <a href="#0">Privacy Policy</a>
+                        </li>
+                        <li>
+                            <a href="#0">FAQ</a>
+                        </li>
+                        <li>
+                            <a href="#0">Feedback</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <script src="{{asset('frontend/js/jquery-3.3.1.min.js')}}"></script>
+    <script src="{{asset('frontend/js/modernizr-3.6.0.min.js')}}"></script>
+    <script src="{{asset('frontend/js/plugins.js')}}"></script>
+    <script src="{{asset('frontend/js/bootstrap.min.js')}}"></script>
+    <script src="{{asset('frontend/js/heandline.js')}}"></script>
+    <script src="{{asset('frontend/js/isotope.pkgd.min.js')}}"></script>
+    <script src="{{asset('frontend/js/magnific-popup.min.js')}}"></script>
+    <script src="{{asset('frontend/js/owl.carousel.min.js')}}"></script>
+    <script src="{{asset('frontend/js/wow.min.js')}}"></script>
+    <script src="{{asset('frontend/js/countdown.min.js')}}"></script>
+    <script src="{{asset('frontend/js/odometer.min.js')}}"></script>
+    <script src="{{asset('frontend/js/viewport.jquery.js')}}"></script>
+    <script src="{{asset('frontend/js/nice-select.js')}}"></script>
+    <script src="{{asset('frontend/js/main.js')}}"></script>
+</body>
+</html>
